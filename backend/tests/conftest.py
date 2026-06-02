@@ -12,9 +12,17 @@ os.environ["JWT_SECRET"] = "test-secret"
 
 from fastapi.testclient import TestClient  # noqa: E402
 from app.main import app  # noqa: E402
-from app.core.db import init_db  # noqa: E402
+from app.core.db import init_db, SessionLocal  # noqa: E402
+from app.services.tax_rules import seed_sample_tax_rules  # noqa: E402
 
 init_db()
+# The startup seeder only runs under a live server; seed here so payroll tests
+# have tax tables to read.
+_seed_db = SessionLocal()
+try:
+    seed_sample_tax_rules(_seed_db)
+finally:
+    _seed_db.close()
 
 
 @pytest.fixture

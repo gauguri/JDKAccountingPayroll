@@ -110,6 +110,52 @@ class PreviewOut(BaseModel):
     lines: list[PreviewLine]
 
 
+# ---- payroll ----
+class EmployeeIn(BaseModel):
+    first_name: str
+    last_name: str
+    address: str | None = None
+    ssn: str | None = None
+    email: str | None = None
+    pay_type: str = "hourly"
+    pay_rate: Decimal = Decimal("0")
+    filing_status: str = "single"
+    fed_extra_withholding: Decimal = Decimal("0")
+    state_extra_withholding: Decimal = Decimal("0")
+    direct_deposit: str | None = None
+    start_date: date | None = None
+    is_active: bool = True
+
+
+class EmployeeOut(BaseModel):
+    id: str
+    first_name: str
+    last_name: str
+    pay_type: str
+    pay_rate: Decimal
+    filing_status: str
+    ssn_masked: str | None = None
+    is_active: bool
+
+
+class EmployerSetupIn(BaseModel):
+    state_employer_id: str | None = None
+    payroll_schedule: str = "biweekly"
+    suta_rate: Decimal = Decimal("0")
+
+
+class PayrollHours(BaseModel):
+    employee_id: str
+    hours: Decimal = Decimal("0")
+
+
+class PayrollRunIn(BaseModel):
+    pay_period_start: date
+    pay_period_end: date
+    pay_date: date
+    hours: list[PayrollHours] = []
+
+
 # ---- bank import ----
 class BankMapIn(BaseModel):
     bank_label: str

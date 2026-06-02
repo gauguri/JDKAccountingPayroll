@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>PR — MVP 1: Daily bookkeeping</title>
+<style>
+  :root { color-scheme: light; }
+  body {
+    margin: 0; padding: 40px 20px;
+    background: #f1f5f9; color: #0f172a;
+    font: 16px/1.6 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  .sheet {
+    max-width: 820px; margin: 0 auto; background: #fff;
+    border: 1px solid #e2e8f0; border-radius: 16px;
+    box-shadow: 0 6px 24px rgba(2,6,23,.06); padding: 40px 48px;
+  }
+  h1 { font-size: 30px; margin: 0 0 4px; }
+  h2 { font-size: 20px; margin: 32px 0 10px; padding-bottom: 6px; border-bottom: 2px solid #e2e8f0; }
+  .lede { color: #475569; margin: 0 0 8px; }
+  ul { margin: 8px 0; padding-left: 22px; }
+  li { margin: 6px 0; }
+  code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  code { background: #f1f5f9; padding: 2px 6px; border-radius: 6px; font-size: 14px; }
+  pre {
+    background: #0f172a; color: #e2e8f0; padding: 16px 18px;
+    border-radius: 12px; overflow-x: auto; font-size: 14px; line-height: 1.5;
+  }
+  pre code { background: transparent; padding: 0; color: inherit; }
+  .pill {
+    display: inline-block; background: #dbeafe; color: #1e3a8a;
+    border-radius: 999px; padding: 2px 12px; font-size: 13px; font-weight: 600;
+    margin-right: 6px;
+  }
+  .meta { margin-top: 8px; }
+  strong { color: #0f172a; }
+</style>
+</head>
+<body>
+  <div class="sheet">
+    <h1>MVP 1 — Daily bookkeeping</h1>
+    <p class="lede">
+      First working version of JDK Books: a simple, senior-friendly QuickBooks
+      alternative for the two shops (apparel/embroidery and custom signs). Records
+      income and expenses, explains profit, and packages everything for the CPA.
+      No payroll or tax filing yet (those are MVP 2+).
+    </p>
+    <div class="meta">
+      <span class="pill">base: main</span>
+      <span class="pill">compare: mvp1-bookkeeping</span>
+    </div>
+
+    <h2>What's included</h2>
+    <ul>
+      <li><strong>Auth &amp; multi-company</strong> — email/password login; both businesses run as separate sets of books (his C-corp, her LLC), New Jersey defaults, append-only audit log on every change.</li>
+      <li><strong>Chart of accounts</strong> — preloaded in plain English for an apparel/embroidery/signs shop (Blank Shirts/Hats, Vinyl/Sign Materials, Sales Tax Payable, etc.). Built-in accounts can be hidden but not deleted; accounts with transactions are protected.</li>
+      <li><strong>Income &amp; expense entry</strong> — wizard with an <em>explain-before-post</em> preview so nothing hits the books until the user confirms. NJ sales tax booked as a liability; credit-card purchases tracked correctly.</li>
+      <li><strong>Bank CSV import</strong> — column mapping (remembered per bank), duplicate detection, category suggestions, "needs review" flag.</li>
+      <li><strong>Reports</strong> — Profit &amp; Loss, Balance Sheet, Trial Balance, General Ledger, each downloadable as PDF or CSV.</li>
+      <li><strong>CPA export</strong> — one-click ZIP with all reports plus a notes file listing items flagged for CPA review.</li>
+      <li><strong>QuickBooks import</strong> — import module with a working CSV-export path; live QBO OAuth is wired at deploy time with Intuit app credentials.</li>
+      <li><strong>Frontend</strong> — React + TypeScript + Tailwind, large fonts, big buttons, "What do you want to do today?" home screen.</li>
+    </ul>
+
+    <h2>Stack</h2>
+    <p>React/TS/Tailwind · FastAPI · PostgreSQL (SQLite for tests/local) · Docker Compose.</p>
+
+    <h2>How to test</h2>
+    <pre><code># Full stack
+docker compose up --build      # web :3000, api :8000/docs
+
+# Backend tests
+cd backend &amp;&amp; pip install -r requirements.txt &amp;&amp; pytest</code></pre>
+    <p>
+      Tests cover auth + multi-company isolation, chart-of-accounts guards,
+      income/expense posting with NJ sales tax, double-entry tie-outs (trial
+      balance balances; Assets = Liabilities + Equity), CSV import with dedupe,
+      report exports, and the CPA ZIP.
+    </p>
+
+    <h2>Design guardrails honored</h2>
+    <p>Explain-before-post · AI-suggests-only (none wired in yet) · tax handling as data, not hardcoded · "organize, don't file."</p>
+
+    <h2>Out of scope (follow-ups)</h2>
+    <p>Receipt upload + OCR, optional MFA, backup/restore UI, and bank reconciliation (Phase 6). Payroll is MVP 2.</p>
+
+    <h2>Notes for reviewers</h2>
+    <ul>
+      <li>New users register via the web app (creates the first company); add the second business with "+ Add business."</li>
+      <li>Books use proper double-entry; corrections post reversing entries rather than editing history.</li>
+    </ul>
+  </div>
+</body>
+</html>

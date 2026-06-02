@@ -14,11 +14,15 @@ Each MVP is independently useful. The senior-friendly UI, audit logging, encrypt
 - [~] Phase 1.5: QuickBooks import module + CSV path built; live QBO OAuth wired at deploy
 - [ ] Still to add: receipt upload + OCR, optional MFA, backup/restore UI, bank reconciliation (Phase 6)
 
-## MVP 2 — Payroll
-- [ ] Employee setup (encrypted SSN/direct deposit), employer setup
-- [ ] Payroll run wizard (period → hours → calculate → approve → post)
-- [ ] Configurable, versioned tax tables with review-before-use
-- [ ] Pay stubs (PDF), payroll register, payroll-tax liability reports
+## MVP 2 — Payroll  ← built (on `mvp2-payroll`)
+- [x] Employee setup (encrypted SSN/direct deposit), employer setup, per-company
+- [x] Payroll run wizard (period → hours → calculate → review → approve → post)
+- [x] Versioned, effective-dated tax-rule engine; sample 2026 rates seeded as DRAFT, approve-before-use
+- [x] Calculation engine: gross, fed/NJ withholding (bracket method), SS/Medicare + addl Medicare, FUTA/SUTA, with YTD wage-base caps; records rule versions used
+- [x] Balanced payroll journal entry on post; books stay tied out
+- [x] Pay stubs (PDF), payroll register, employer-tax + tax-liability reports, 941/940 worksheet data
+- [x] Senior-friendly payroll screens with prominent "sample/draft rates" warning
+- [ ] Still to add: direct-deposit ACH file (intentionally out — spec defers), W-2/W-3 year-end forms
 
 ## MVP 3 — Sales tax & tax organization
 - [ ] Sales tax rates/collected/payable/payments + reports

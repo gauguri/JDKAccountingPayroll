@@ -1,0 +1,29 @@
+# Secrets
+.env
+*.pem
+*.key
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+
+# Node / frontend
+node_modules/
+dist/
+build/
+.vite/
+
+# Data & docs
+/data/
+*.sqlite
+documents/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.log

@@ -59,5 +59,6 @@ class Expense(Base, IdMixin, TimestampMixin):
     reimbursable: Mapped[bool] = mapped_column(Boolean, default=False)
     tax_deductible: Mapped[bool] = mapped_column(Boolean, default=True)
     cpa_review: Mapped[bool] = mapped_column(Boolean, default=False)
+    notes: Mapped[str | None] = mapped_column(Text, nullable=True)
     attachment_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
     journal_entry_id: Mapped[str | None] = mapped_column(String(36), nullable=True)

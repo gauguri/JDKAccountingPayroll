@@ -4,7 +4,7 @@ from decimal import Decimal
 from tests.conftest import accounts_by_name
 
 
-def test_sample_tax_rules_seeded_as_draft(client):
+def test_sample_tax_rules_seeded_as_draft(company, client):
     rows = client.get("/api/tax-rules").json()
     kinds = {(r["jurisdiction"], r["tax_type"]) for r in rows}
     assert ("US", "ss") in kinds and ("US", "medicare") in kinds
@@ -13,7 +13,7 @@ def test_sample_tax_rules_seeded_as_draft(client):
     assert all(r["status"] == "draft" for r in rows)
 
 
-def test_approve_ruleset(client):
+def test_approve_ruleset(company, client):
     rs = client.get("/api/tax-rules").json()[0]
     r = client.post(f"/api/tax-rules/{rs['id']}/approve")
     assert r.status_code == 200 and r.json()["status"] == "approved"

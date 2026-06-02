@@ -5,9 +5,10 @@ import { Home } from "./pages/Home";
 import { EntryWizard } from "./pages/EntryWizard";
 import { Reports } from "./pages/Reports";
 import { Accounts } from "./pages/Accounts";
+import { Payroll } from "./pages/Payroll";
 import { CompanyBar } from "./components/CompanyBar";
 
-export type View = "home" | "income" | "expense" | "reports" | "accounts";
+export type View = "home" | "income" | "expense" | "reports" | "accounts" | "payroll";
 
 export default function App() {
   const [authed, setAuthed] = useState<boolean | null>(null);
@@ -56,6 +57,8 @@ export default function App() {
           <EntryWizard kind="expense" companyId={companyId} onBack={() => setView("home")} />
         ) : view === "reports" ? (
           <Reports companyId={companyId} onBack={() => setView("home")} />
+        ) : view === "payroll" ? (
+          <Payroll companyId={companyId} onBack={() => setView("home")} />
         ) : (
           <Accounts companyId={companyId} onBack={() => setView("home")} />
         )}

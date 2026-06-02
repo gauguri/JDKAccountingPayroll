@@ -3,6 +3,7 @@ import { View } from "../App";
 const TILES: { view: View; label: string; sub: string; emoji: string }[] = [
   { view: "income", label: "Record money coming in", sub: "A sale or payment", emoji: "💵" },
   { view: "expense", label: "Record money going out", sub: "A bill or purchase", emoji: "🧾" },
+  { view: "payroll", label: "Run payroll", sub: "Pay employees, print stubs", emoji: "👥" },
   { view: "reports", label: "See how I'm doing", sub: "Profit, balances, taxes", emoji: "📊" },
   { view: "accounts", label: "My categories", sub: "Chart of accounts", emoji: "🗂️" },
 ];

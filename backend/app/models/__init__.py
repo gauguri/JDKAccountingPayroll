@@ -10,10 +10,16 @@ from app.models.bank import (
     BankCsvMapping, BankImportBatch, BankTransaction, CategorizationRule,
 )
 from app.models.audit import AuditLog
+from app.models.tax_rules import TaxRuleset, TaxRule
+from app.models.payroll import (
+    Employee, EmployerPayrollSetup, PayrollRun, PayrollItem, PayStub,
+)
 
 __all__ = [
     "User", "UserCompany", "Company", "CompanyOwner", "BankAccountName",
     "FiscalYear", "CpaContact", "Setting", "Account", "JournalEntry",
     "JournalLine", "Customer", "Vendor", "Income", "Expense", "BankCsvMapping",
     "BankImportBatch", "BankTransaction", "CategorizationRule", "AuditLog",
+    "TaxRuleset", "TaxRule", "Employee", "EmployerPayrollSetup", "PayrollRun",
+    "PayrollItem", "PayStub",
 ]

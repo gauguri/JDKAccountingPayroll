@@ -36,13 +36,45 @@ docs/             additional design notes
 ops/              docker, deploy, backup runbooks
 ```
 
-## Getting started (once code lands in MVP 1)
+## Getting started
+
+The fastest path is Docker (starts Postgres, API, web, and worker together):
 
 ```bash
 cp .env.example .env          # fill in secrets
-docker compose up --build     # starts db, api, web, worker
-# web:  http://localhost:3000
+docker compose up --build
+# web:  http://localhost:3000   (sign up, then "What do you want to do today?")
 # api:  http://localhost:8000/docs
+```
+
+### Run the backend on its own (local dev)
+
+```bash
+cd backend
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload      # uses a local SQLite file by default
+```
+
+### Run the tests
+
+```bash
+cd backend
+pip install -r requirements.txt
+pytest                              # runs against a throwaway SQLite DB
+```
+
+The test suite covers auth + multi-company isolation, the chart-of-accounts
+guards, income/expense posting with NJ sales tax, the double-entry tie-outs
+(trial balance balances, Assets = Liabilities + Equity), CSV bank import with
+duplicate detection, report exports (CSV/PDF), and the CPA ZIP package.
+
+### Run the frontend on its own
+
+```bash
+cd frontend
+npm install
+npm run dev                         # http://localhost:3000, proxies /api to :8000
 ```
 
 ## Guardrails (non-negotiable)
@@ -55,4 +87,12 @@ docker compose up --build     # starts db, api, web, worker
 
 ## Status
 
-Phase 0 (architecture) complete. Next: MVP 1 — core setup, chart of accounts, income/expense entry, bank CSV import, basic reports, CPA export, plus QuickBooks import.
+Phase 0 (architecture) complete. **MVP 1 backend + frontend built** on the
+`mvp1-bookkeeping` branch: auth & multi-company setup (his C-corp + her LLC),
+NJ-preloaded chart of accounts, income & expense entry with explain-before-post
+previews, bank CSV import with duplicate detection, P&L / Balance Sheet / Trial
+Balance / General Ledger reports (CSV + PDF), and the one-click CPA export ZIP.
+A QuickBooks/CSV import module is included; the live QuickBooks Online OAuth
+connection is wired up at deployment with Intuit app credentials.
+
+Next: MVP 2 (payroll).

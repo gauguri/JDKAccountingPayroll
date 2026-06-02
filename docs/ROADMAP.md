@@ -2,16 +2,17 @@
 
 Each MVP is independently useful. The senior-friendly UI, audit logging, encryption, backups, and rule-engine discipline are built in from MVP 1, not added later.
 
-## MVP 1 — Daily bookkeeping  ← build next
-- [ ] Core setup: auth (email/password + optional MFA), company setup wizard, fiscal year, settings
-- [ ] Backup/restore + append-only audit log
-- [ ] Simplified chart of accounts (preloaded for apparel/embroidery/signs)
-- [ ] Income entry wizard (cash/check/cc/ach/zelle/venmo, sales tax, taxable flag)
-- [ ] Expense entry wizard (vendor, category, receipt upload, OCR suggestion, deductible/CPA-review flags)
-- [ ] Bank CSV import (map columns, dedupe, match, "needs review")
-- [ ] Reports: P&L, Balance Sheet, General Ledger, Trial Balance (PDF/CSV)
-- [ ] CPA export package (ZIP)
-- [ ] Phase 1.5: QuickBooks (QBO/QBD/CSV/IIF) import + migration report
+## MVP 1 — Daily bookkeeping  ← built (on `mvp1-bookkeeping`)
+- [x] Core setup: auth (email/password), multi-company setup, append-only audit log
+- [x] Simplified chart of accounts (preloaded for apparel/embroidery/signs, NJ)
+- [x] Income entry with explain-before-post preview (cash/check/cc/ach/zelle/venmo, sales tax)
+- [x] Expense entry with preview (vendor, category, deductible/CPA-review flags)
+- [x] Bank CSV import (map columns, dedupe, suggest categories, "needs review")
+- [x] Reports: P&L, Balance Sheet, General Ledger, Trial Balance (PDF/CSV)
+- [x] CPA export package (ZIP)
+- [x] Senior-friendly React frontend (big fonts, wizards, plain English)
+- [~] Phase 1.5: QuickBooks import module + CSV path built; live QBO OAuth wired at deploy
+- [ ] Still to add: receipt upload + OCR, optional MFA, backup/restore UI, bank reconciliation (Phase 6)
 
 ## MVP 2 — Payroll
 - [ ] Employee setup (encrypted SSN/direct deposit), employer setup

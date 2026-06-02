@@ -1,4 +1,6 @@
 """JDK Books API entrypoint."""
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -9,19 +11,9 @@ from app.routers import (
 )
 from app.services.tax_rules import seed_sample_tax_rules
 
-app = FastAPI(title="JDK Books API", version="0.1.0")
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:5173"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-
-@app.on_event("startup")
-def _startup():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
     init_db()
     # Seed sample (DRAFT) tax tables once so payroll can be demoed; they must be
     # reviewed/approved before use. No-op if already present.
@@ -30,6 +22,18 @@ def _startup():
         seed_sample_tax_rules(db)
     finally:
         db.close()
+    yield
+
+
+app = FastAPI(title="JDK Books API", version="0.1.0", lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000", "http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/api/health")

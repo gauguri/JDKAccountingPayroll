@@ -22,7 +22,7 @@ export function CompanyBar({
 
   return (
     <header className="bg-blue-800 text-white">
-      <div className="max-w-4xl mx-auto px-4 py-4 flex flex-wrap items-center gap-3">
+      <div className="max-w-6xl mx-auto px-6 py-4 flex flex-wrap items-center gap-3">
         <span className="text-2xl font-bold mr-2">JDK Books</span>
         <select
           className="text-slate-900 rounded-lg px-3 py-2 text-lg"
@@ -41,7 +41,7 @@ export function CompanyBar({
         </div>
       </div>
       {adding && (
-        <div className="max-w-4xl mx-auto px-4 pb-4 flex flex-wrap gap-3 items-end">
+        <div className="max-w-6xl mx-auto px-6 pb-4 flex flex-wrap gap-3 items-end">
           <div>
             <label className="block text-sm">Business name</label>
             <input className="text-slate-900 rounded-lg px-3 py-2"

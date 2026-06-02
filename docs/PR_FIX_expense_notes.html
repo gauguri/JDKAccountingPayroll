@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>PR — Fix: expense notes, tax-table seeding, startup, deps</title>
+<style>
+  :root { color-scheme: light; }
+  body {
+    margin: 0; padding: 40px 20px;
+    background: #f1f5f9; color: #0f172a;
+    font: 16px/1.6 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  .sheet {
+    max-width: 820px; margin: 0 auto; background: #fff;
+    border: 1px solid #e2e8f0; border-radius: 16px;
+    box-shadow: 0 6px 24px rgba(2,6,23,.06); padding: 40px 48px;
+  }
+  h1 { font-size: 28px; margin: 0 0 4px; }
+  h2 { font-size: 19px; margin: 30px 0 10px; padding-bottom: 6px; border-bottom: 2px solid #e2e8f0; }
+  .lede { color: #475569; margin: 0 0 8px; }
+  ul { margin: 8px 0; padding-left: 22px; }
+  li { margin: 6px 0; }
+  code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  code { background: #f1f5f9; padding: 2px 6px; border-radius: 6px; font-size: 14px; }
+  pre {
+    background: #0f172a; color: #e2e8f0; padding: 16px 18px;
+    border-radius: 12px; overflow-x: auto; font-size: 14px; line-height: 1.5;
+  }
+  pre code { background: transparent; padding: 0; color: inherit; }
+  .pill {
+    display: inline-block; background: #dbeafe; color: #1e3a8a;
+    border-radius: 999px; padding: 2px 12px; font-size: 13px; font-weight: 600;
+    margin-right: 6px;
+  }
+  .bug { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b;
+    border-radius: 12px; padding: 12px 16px; margin: 16px 0; font-size: 15px; }
+  .meta { margin-top: 8px; }
+  strong { color: #0f172a; }
+</style>
+</head>
+<body>
+  <div class="sheet">
+    <h1>Fix: expense notes column, tax-table seeding in tests, startup &amp; deps</h1>
+    <p class="lede">
+      Bug fixes found by running the test suite on a clean machine. One is a real
+      production bug (expense creation was broken); the rest are test-environment
+      and housekeeping fixes. All 26 backend tests now pass.
+    </p>
+    <div class="meta">
+      <span class="pill">base: main</span>
+      <span class="pill">compare: fix/expense-notes-and-tax-seed</span>
+    </div>
+
+    <div class="bug">
+      🐞 <strong>Production bug:</strong> the expense endpoint passed <code>notes=…</code> but the
+      <code>Expense</code> model had no <code>notes</code> column, so <em>every</em> expense save (and
+      the reports/CPA flows that create expenses) raised a 500 in the live app. Fixed by adding the column.
+    </div>
+
+    <h2>What changed</h2>
+    <ul>
+      <li><strong>Add <code>Expense.notes</code> column</strong> (<code>models/transactions.py</code>) — fixes expense creation, expense listing, and the CPA export that reads <code>notes</code>.</li>
+      <li><strong>Seed sample tax tables in tests</strong> (<code>tests/conftest.py</code>) — the startup seeder only runs under a live server, so the test client found no rates and payroll taxes computed as <code>0.00</code>. Seeding in the fixture fixes the payroll tests (now SS $99.20, Medicare $23.20 on a $1,600 check).</li>
+      <li><strong>Authenticate the <code>/tax-rules</code> tests</strong> (<code>tests/test_payroll.py</code>) — they were calling a protected endpoint without a session.</li>
+      <li><strong>Migrate startup to FastAPI <code>lifespan</code></strong> (<code>app/main.py</code>) — replaces the deprecated <code>on_event("startup")</code>.</li>
+      <li><strong>Refactor a payroll test helper</strong> so no test function returns a value (future pytest treats that as an error).</li>
+      <li><strong>Relax the psycopg pin</strong> (<code>requirements.txt</code>: <code>psycopg[binary]&gt;=3.2,&lt;4</code>) so installs work on newer Python versions.</li>
+    </ul>
+
+    <h2>Test result</h2>
+    <pre><code>cd backend &amp;&amp; pytest
+# 26 passed</code></pre>
+    <p>
+      No remaining failures. The only warnings left come from third-party libraries
+      (reportlab, python-jose) adapting to newer Python and are not actionable here.
+    </p>
+
+    <h2>Notes for reviewers</h2>
+    <ul>
+      <li>No schema migration tooling yet (MVP stage) — tables are created from models at startup, so the new <code>notes</code> column appears automatically on a fresh DB. An existing Postgres volume would need the column added or the dev volume recreated.</li>
+      <li>No behavior change to the payroll math — the earlier <code>0.00</code> values were purely missing seed data in tests, not a calculation error.</li>
+    </ul>
+  </div>
+</body>
+</html>

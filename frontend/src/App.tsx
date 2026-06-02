@@ -46,7 +46,7 @@ export default function App() {
         onLogout={async () => { await api.post("/auth/logout"); setAuthed(false); }}
         onReload={loadSession}
       />
-      <main className="max-w-4xl mx-auto px-4 py-8">
+      <main className="max-w-6xl mx-auto px-6 py-8">
         {!companyId ? (
           <p className="text-xl">Add a business to get started.</p>
         ) : view === "home" ? (

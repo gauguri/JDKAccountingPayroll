@@ -8,7 +8,8 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      # Host 5433 -> container 5432 (5432 is used by another local project).
+      - "5433:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-jdkbooks}"]
       interval: 5s
@@ -18,11 +19,14 @@ services:
   api:
     build: ./backend
     env_file: .env
+    # --reload picks up backend code edits (./backend is mounted below).
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     depends_on:
       db:
         condition: service_healthy
     ports:
-      - "8000:8000"
+      # Host 8002 -> container 8000 (8000 is used by another local project).
+      - "8002:8000"
     volumes:
       - ./backend:/app
       - doc_store:/data/documents
@@ -44,6 +48,11 @@ services:
       - api
     environment:
       VITE_API_TARGET: http://api:8000
+    volumes:
+      # Live-reload: edits to ./frontend show up without rebuilding.
+      # The anonymous volume keeps the container's node_modules intact.
+      - ./frontend:/app
+      - /app/node_modules
     ports:
       - "3000:3000"
 

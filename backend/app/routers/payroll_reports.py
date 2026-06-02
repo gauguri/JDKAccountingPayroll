@@ -4,10 +4,12 @@ from datetime import date
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import Response, JSONResponse
+from sqlalchemy import func, extract
 from sqlalchemy.orm import Session
 
 from app.core.db import get_db
 from app.core.deps import get_current_user, require_company
+from app.core.security import decrypt_field, mask_tail
 from app.models.user import User
 from app.models.company import Company
 from app.models.payroll import PayrollRun, PayrollItem, Employee
@@ -38,10 +40,34 @@ def pay_stub(company_id: str, run_id: str, item_id: str,
         raise HTTPException(404, "Pay stub not found")
     company = db.get(Company, company_id)
     emp = db.get(Employee, item.employee_id)
+
+    # Year-to-date totals for this employee, through this pay date (inclusive).
+    year = run.pay_date.year
+    sums = (db.query(*[func.coalesce(func.sum(getattr(PayrollItem, f)), 0) for f in _FIELDS])
+            .join(PayrollRun, PayrollRun.id == PayrollItem.payroll_run_id)
+            .filter(PayrollItem.employee_id == item.employee_id,
+                    extract("year", PayrollRun.pay_date) == year,
+                    PayrollRun.pay_date <= run.pay_date,
+                    PayrollRun.status.in_(("calculated", "approved", "posted")))
+            .one())
+    ytd = {f: money(sums[i]) for i, f in enumerate(_FIELDS)}
+    this_period = {f: money(getattr(item, f)) for f in _FIELDS}
+
+    company_addr = "\n".join(p for p in [
+        company.address_line1,
+        ", ".join(x for x in [company.city, company.state, company.zip] if x),
+    ] if p)
+    ssn = decrypt_field(emp.ssn_encrypted) if emp.ssn_encrypted else None
+
     pdf = paystub_pdf(
-        company_name=company.name, employee_name=f"{emp.first_name} {emp.last_name}",
-        pay_date=str(run.pay_date), period=f"{run.pay_period_start} to {run.pay_period_end}",
-        item={f: str(getattr(item, f)) for f in _FIELDS} | {"hours": str(item.hours)},
+        company={"name": company.name, "address": company_addr},
+        employee={"name": f"{emp.first_name} {emp.last_name}",
+                  "ssn_masked": mask_tail(ssn) if ssn else None,
+                  "filing_status": (emp.filing_status or "").replace("_", " ").title(),
+                  "address": emp.address or ""},
+        period_end=str(run.pay_period_end), pay_date=str(run.pay_date),
+        rate=str(emp.pay_rate), hours=str(item.hours), pay_type=emp.pay_type,
+        this_period=this_period, ytd=ytd,
     )
     return Response(pdf, media_type="application/pdf",
                     headers={"Content-Disposition": f"attachment; filename=paystub_{item_id}.pdf"})

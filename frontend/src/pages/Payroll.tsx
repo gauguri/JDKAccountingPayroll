@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "../lib/api";
+import { DateField } from "../components/DateField";
 
 type Emp = { id: string; first_name: string; last_name: string; pay_type: string;
   pay_rate: string; filing_status: string; ssn_masked?: string; is_active: boolean };
@@ -187,11 +188,11 @@ function RunPayroll({ companyId }: { companyId: string }) {
       {error && <p className="text-red-700 mb-3 text-lg">{error}</p>}
       <div className="grid sm:grid-cols-3 gap-4 mb-5">
         <div><label className="label">Period start</label>
-          <input type="date" className="field" value={start} onChange={(e) => setStart(e.target.value)} /></div>
+          <DateField value={start} onChange={setStart} /></div>
         <div><label className="label">Period end</label>
-          <input type="date" className="field" value={end} onChange={(e) => setEnd(e.target.value)} /></div>
+          <DateField value={end} onChange={setEnd} /></div>
         <div><label className="label">Pay date</label>
-          <input type="date" className="field" value={payDate} onChange={(e) => setPayDate(e.target.value)} /></div>
+          <DateField value={payDate} onChange={setPayDate} /></div>
       </div>
       <h3 className="text-xl font-semibold mb-2">Hours this period</h3>
       {emps.length === 0 && <p className="text-slate-600 mb-3">Add an employee first.</p>}

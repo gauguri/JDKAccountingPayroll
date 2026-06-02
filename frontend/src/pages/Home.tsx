@@ -13,7 +13,7 @@ export function Home({ companyName, go }: { companyName: string; go: (v: View) =
     <div>
       <h1 className="text-3xl font-bold mb-2">What do you want to do today?</h1>
       <p className="text-slate-600 mb-8 text-lg">Working on: {companyName}</p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {TILES.map((t) => (
           <button key={t.view} onClick={() => go(t.view)}
                   className="card text-left hover:border-blue-500 hover:shadow-lg transition">

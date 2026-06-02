@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { api } from "../lib/api";
 import { loadAccounts } from "../App";
+import { DateField } from "../components/DateField";
 
 type Kind = "income" | "expense";
 type Acct = { id: string; name: string; type: string };
@@ -31,6 +32,8 @@ export function EntryWizard({ kind, companyId, onBack }: {
   const [notes, setNotes] = useState("");
 
   const isIncome = kind === "income";
+  // API resource path: income endpoints are /income, expense endpoints are /expenses.
+  const resource = isIncome ? "income" : "expenses";
   const categoryAccounts = accounts.filter((a) => a.type === (isIncome ? "income" : "expense"));
 
   useEffect(() => {
@@ -52,7 +55,7 @@ export function EntryWizard({ kind, companyId, onBack }: {
   async function doPreview() {
     setError("");
     try {
-      const p = await api.post(`/companies/${companyId}/${kind}/preview`, body());
+      const p = await api.post(`/companies/${companyId}/${resource}/preview`, body());
       setPreview(p); setStep(2);
     } catch (e: any) { setError(e.message); }
   }
@@ -60,14 +63,14 @@ export function EntryWizard({ kind, companyId, onBack }: {
   async function confirm() {
     setError("");
     try {
-      const r = await api.post(`/companies/${companyId}/${kind}`, body());
+      const r = await api.post(`/companies/${companyId}/${resource}`, body());
       setDone(r.explanation); setStep(3);
     } catch (e: any) { setError(e.message); }
   }
 
   if (step === 3)
     return (
-      <div className="card">
+      <div className="card max-w-2xl">
         <div className="text-5xl mb-3">✅</div>
         <h2 className="text-2xl font-bold mb-2">Saved to your books</h2>
         <p className="text-lg text-slate-700 mb-6">{done}</p>
@@ -76,7 +79,7 @@ export function EntryWizard({ kind, companyId, onBack }: {
     );
 
   return (
-    <div>
+    <div className="max-w-2xl">
       <button className="text-blue-700 underline text-lg mb-4" onClick={onBack}>← Back</button>
       <h1 className="text-3xl font-bold mb-1">
         {isIncome ? "Record money coming in" : "Record money going out"}
@@ -89,8 +92,7 @@ export function EntryWizard({ kind, companyId, onBack }: {
         <div className="card space-y-4">
           <div>
             <label className="label">Date</label>
-            <input type="date" className="field" value={date}
-                   onChange={(e) => setDate(e.target.value)} />
+            <DateField value={date} onChange={setDate} />
           </div>
           <div>
             <label className="label">Amount ($)</label>

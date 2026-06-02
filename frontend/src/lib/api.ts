@@ -10,7 +10,15 @@ async function req(path: string, opts: RequestInit = {}) {
   if (!res.ok) {
     let detail = res.statusText;
     try {
-      detail = (await res.json()).detail || detail;
+      const body = await res.json();
+      if (typeof body.detail === "string") {
+        detail = body.detail;
+      } else if (Array.isArray(body.detail)) {
+        // FastAPI validation errors arrive as a list of {loc, msg, ...}.
+        detail = body.detail.map((e: any) => e.msg).join("; ");
+      } else if (body.detail) {
+        detail = JSON.stringify(body.detail);
+      }
     } catch {}
     throw new Error(detail);
   }
